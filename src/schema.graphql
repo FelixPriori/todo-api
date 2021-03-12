@@ -1,0 +1,48 @@
+type Query {
+  users: [User!]!
+  tasks: [Task!]!
+}
+
+type Mutation {
+  createUser(data: CreateUserInput!): User!
+  deleteUser(id: ID!): User!
+  updateUser(id: ID!, data: UpdateUserInput!): User!
+  createTask(data: CreateTaskInput!): Task!
+  deleteTask(id: ID!): Task!
+  updateTask(id: ID!, data: UpdateTaskInput!): Task!
+}
+
+input CreateUserInput {
+  name: String!
+  email: String!
+}
+
+input UpdateUserInput {
+  name: String
+  email: String
+}
+
+input CreateTaskInput {
+  text: String!
+  completed: Boolean!
+  user: ID!
+}
+
+input UpdateTaskInput {
+  text: String
+  completed: Boolean
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  tasks: [Task!]!
+}
+
+type Task {
+  id: ID!
+  text: String!
+  user: User!
+  completed: Boolean!
+}
