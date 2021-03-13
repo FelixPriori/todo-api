@@ -25,10 +25,10 @@ const users = [
 ]
 
 const tasks = [
-  {id: 1, user: userIds.felix, text: 'build my portfolio', completed: false},
-  {id: 2, user: userIds.kim, text: 'eat tacos', completed: true},
-  {id: 3, user: userIds.kent, text: 'do some acting', completed: false},
-  {id: 4, user: userIds.kim, text: 'find a new job', completed: false},
+  {id: '1', user: userIds.felix, text: 'build my portfolio', completed: false},
+  {id: '2', user: userIds.kim, text: 'eat tacos', completed: true},
+  {id: '3', user: userIds.kent, text: 'do some acting', completed: false},
+  {id: '4', user: userIds.kim, text: 'find a new job', completed: false},
 ]
 
 const db = {
