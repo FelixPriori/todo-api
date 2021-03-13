@@ -16,7 +16,7 @@ const Mutation = {
     return user
   },
   deleteUser(parent, args, {db}, info) {
-    const userIndex = db.users.findIndex(({id}) => id === args.id)
+    const userIndex = db.users.findIndex(({id}) => String(id) === args.id)
 
     if (userIndex < 0) throw new Error('User not found')
 
@@ -29,7 +29,7 @@ const Mutation = {
   },
   updateUser(parent, {id, data}, {db}, info) {
     const {email, name} = data
-    const user = db.users.find((user) => user.id === id)
+    const user = db.users.find((user) => String(user.id) === id)
 
     if (!user) throw new Error('User not found')
 
@@ -43,30 +43,44 @@ const Mutation = {
 
     return user
   },
-  createTask(parent, args, {db}, info) {
-    const userExists = db.users.some((user) => user.id === args.data.user)
+  createTask(parent, {data}, {db, pubsub}, info) {
+    const userExists = db.users.some((user) => String(user.id) === data.user)
 
     if (!userExists) throw new Error('User not found')
 
     const task = {
-      ...args.data,
+      ...data,
       id: uuidv4(),
     }
 
     db.tasks.push(task)
 
+    pubsub.publish(`task`, {
+      task: {
+        mutation: 'CREATED',
+        data: task,
+      },
+    })
+
     return task
   },
-  deleteTask(parent, args, {db}, info) {
+  deleteTask(parent, args, {db, pubsub}, info) {
     const taskIndex = db.tasks.findIndex(({id}) => String(id) === args.id)
 
     if (taskIndex < 0) throw new Error('Task not found')
 
-    const deletedTask = db.tasks.splice(taskIndex, 1) // remove task
+    const [task] = db.tasks.splice(taskIndex, 1) // remove & return task
 
-    return deletedTask[0]
+    pubsub.publish(`task`, {
+      task: {
+        mutation: 'DELETED',
+        data: task,
+      },
+    })
+
+    return task
   },
-  updateTask(parent, {id, data}, {db}, info) {
+  updateTask(parent, {id, data}, {db, pubsub}, info) {
     const {completed, text} = data
     const task = db.tasks.find((task) => String(task.id) === id)
 
@@ -74,6 +88,13 @@ const Mutation = {
 
     if (typeof completed === 'boolean') task.completed = completed
     if (typeof text === 'string') task.text = text
+
+    pubsub.publish(`task`, {
+      task: {
+        mutation: 'UPDATED',
+        data: task,
+      },
+    })
 
     return task
   },
