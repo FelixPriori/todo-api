@@ -12,6 +12,10 @@ type Mutation {
   updateTask(id: ID!, data: UpdateTaskInput!): Task!
 }
 
+type Subscription {
+  task: TaskSubscriptionPayload!
+}
+
 input CreateUserInput {
   name: String!
   email: String!
@@ -45,4 +49,15 @@ type Task {
   text: String!
   user: User!
   completed: Boolean!
+}
+
+enum MutationType {
+  CREATED
+  UPDATED
+  DELETED
+}
+
+type TaskSubscriptionPayload {
+  mutation: MutationType!
+  data: Task!
 }
